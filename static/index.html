@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InstaCollector | Premium Image Scraper</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="description" content="Collect public Instagram images and captions with ease.">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fab fa-instagram"></i>
+                <h1>Insta<span>Collector</span> <span id="total-badge" class="badge">0</span></h1>
+            </div>
+            <p class="subtitle">Premium Public Content Archiver</p>
+        </header>
+
+        <section class="search-section glass">
+            <div id="progress-container" class="progress-wrap hidden">
+                <div class="progress-info">
+                    <span id="progress-status">Processing...</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-at"></i>
+                <input type="text" id="username" placeholder="instagram_username" autocomplete="off">
+            </div>
+            <div class="input-group limit-group">
+                <i class="fas fa-list-ol"></i>
+                <input type="number" id="limit" value="10" min="1" max="50">
+            </div>
+            <button id="scrape-btn">
+                <span class="btn-text">Start Collection</span>
+                <span class="loader hidden"></span>
+            </button>
+            <div class="divider">or</div>
+            <button id="import-btn" class="btn-secondary">
+                <i class="fas fa-file-import"></i>
+                <span>Import JSON</span>
+            </button>
+            <input type="file" id="json-upload" accept=".json" class="hidden">
+        </section>
+
+        <main>
+            <div class="main-header">
+                <div class="tab-header">
+                    <button class="tab-btn active" data-tab="collection">Live Feed</button>
+                    <button class="tab-btn" data-tab="history">Archives</button>
+                </div>
+                <div class="filter-controls glass">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="filter-input" placeholder="Search captions or usernames...">
+                </div>
+            </div>
+
+            <div id="collection" class="tab-content active">
+                <div class="status-message" id="status-message">
+                    Enter a username to begin archiving content.
+                </div>
+                <div id="result-grid" class="grid"></div>
+            </div>
+
+            <div id="history" class="tab-content">
+                <div class="archive-header hidden" id="archive-header">
+                    <button id="back-to-folders" class="btn-small">
+                        <i class="fas fa-chevron-left"></i> Back to Folders
+                    </button>
+                    <h2 id="current-folder-name">User Folder</h2>
+                    <button id="delete-folder-btn" class="btn-small btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete Archive
+                    </button>
+                </div>
+                <div id="history-grid" class="grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content glass">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body" class="modal-layout">
+                <div class="modal-image-container">
+                    <img id="modal-img" src="" alt="Full view">
+                </div>
+                <div class="modal-details">
+                    <h3 id="modal-user">@username</h3>
+                    <div class="modal-caption-container">
+                        <p id="modal-caption"></p>
+                    </div>
+                    <div class="modal-info">
+                        <span id="modal-date"></span>
+                        <div class="modal-actions">
+                            <a id="modal-download" href="" download="" class="btn-small">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                            <a id="modal-link" href="" target="_blank" class="btn-small">
+                                <i class="fas fa-external-link-alt"></i> Original
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

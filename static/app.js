@@ -31,7 +31,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressPercent = document.getElementById('progress-percent');
     const progressFill = document.getElementById('progress-fill');
 
+    // Selection Bar elements
+    const selectionBar = document.getElementById('selection-bar');
+    const selectedCountDisplay = document.getElementById('selected-count');
+    const enrichBtn = document.getElementById('enrich-btn'); // Restored
+    const annotateBtn = document.getElementById('annotate-btn'); // Restored
+    const clearSelectionBtn = document.getElementById('clear-selection');
+
+    // AI Progress elements
+    const aiProgressContainer = document.getElementById('ai-progress-container');
+    const aiProgressStatus = document.getElementById('ai-progress-status');
+    const aiProgressPercent = document.getElementById('ai-progress-percent');
+    const aiProgressFill = document.getElementById('ai-progress-fill');
+    const aiCurrentWorkingOn = document.getElementById('ai-current-working-on');
+
+    // AI Info elements
+    const aiInfoContainer = document.getElementById('ai-info');
+    const aiTitle = document.getElementById('ai-title');
+    const aiYear = document.getElementById('ai-year');
+    const aiGenre = document.getElementById('ai-genre');
+    const aiDirector = document.getElementById('ai-director');
+    const aiEmotion = document.getElementById('ai-emotion');
+    const aiEmotionDesc = document.getElementById('ai-emotion-desc');
+    const aiRelatedEmotions = document.getElementById('ai-related-emotions');
+    const aiActorsList = document.getElementById('ai-actors-list');
+    const aiDialogsList = document.getElementById('ai-dialogs-list');
+    const aiTagsList = document.getElementById('ai-tags-list');
+
     let allPosts = []; // Local cache for filtering
+    let selectedPosts = new Set();
+    let currentFolder = null;
+    let isDragging = false;
+    let dragTargetState = true; // true = selecting, false = deselecting
 
     // Initial load
     loadHistory();
@@ -51,7 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentFolder = null;
                 archiveHeader.classList.add('hidden');
                 loadHistory();
+            } else if (tabId === 'dashboard') {
+                loadHistory(); // Refresh statuses for dashboard
             }
+            updateSelectionUI();
         });
     });
 
@@ -216,15 +250,321 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Selection Bar Actions
+    clearSelectionBtn.addEventListener('click', () => {
+        selectedPosts.clear();
+        updateSelectionUI();
+    });
+
+    // Dashboard / Workflow AI Actions
+    enrichBtn.addEventListener('click', async () => {
+        const ids = Array.from(selectedPosts);
+        if (ids.length === 0) return;
+
+        // Verify all are pending
+        const pendingIds = ids.filter(id => {
+            const post = allPosts.find(p => p.post_id === id);
+            return !post.status || post.status === 'pending';
+        });
+
+        if (pendingIds.length === 0) {
+            alert('Selection contains no pending items.');
+            return;
+        }
+
+        await startAIProcess('enrich', pendingIds);
+    });
+
+    annotateBtn.addEventListener('click', async () => {
+        const ids = Array.from(selectedPosts);
+        if (ids.length === 0) return;
+
+        // Verify all are enriched
+        const enrichedIds = ids.filter(id => {
+            const post = allPosts.find(p => p.post_id === id);
+            return post.status === 'enriched';
+        });
+
+        if (enrichedIds.length === 0) {
+            alert('Selection contains no enriched items ready for upload.');
+            return;
+        }
+
+        await startAIProcess('annotate', enrichedIds);
+    });
+
+    async function startAIProcess(type, ids) {
+        const total = ids.length;
+        aiProgressContainer.classList.remove('hidden');
+        setLoading(true, type === 'enrich' ? enrichBtn : annotateBtn);
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (let i = 0; i < total; i++) {
+            const postId = ids[i];
+            const current = i + 1;
+            const percent = Math.round((current / total) * 100);
+
+            const post = allPosts.find(p => p.post_id === postId);
+            const postDisplay = post ? `@${post.username}: ${post.caption?.substring(0, 30) || 'No caption'}...` : postId;
+
+            aiProgressStatus.innerHTML = `<i class="fas fa-circle-notch fa-spin"></i> ${type === 'enrich' ? 'Enriching' : 'Annotating'} meme ${current} of ${total}...`;
+            aiCurrentWorkingOn.textContent = `Working on: ${postDisplay}`;
+            aiProgressPercent.textContent = `${percent}%`;
+            aiProgressFill.style.width = `${percent}%`;
+
+            try {
+                const endpoint = type === 'enrich' ? '/api/enrich' : '/api/annotate';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ post_ids: [postId] })
+                });
+                const result = await response.json();
+
+                // For enrich, it returns list of results, for annotate it returns a single status object
+                if (type === 'enrich') {
+                    if (result[0]?.status === 'success') successCount++;
+                    else failCount++;
+                } else {
+                    if (result.status === 'success') successCount++;
+                    else failCount++;
+                }
+            } catch (err) {
+                console.error(err);
+                failCount++;
+            }
+        }
+
+        aiProgressStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${type === 'enrich' ? 'Enrichment' : 'Annotation'} complete! (${successCount} success, ${failCount} failed)`;
+        aiCurrentWorkingOn.textContent = '';
+        selectedPosts.clear();
+        await loadHistory();
+        updateSelectionUI();
+        setLoading(false, type === 'enrich' ? enrichBtn : annotateBtn);
+
+        // Hide progress after a delay
+        setTimeout(() => {
+            if (!aiProgressStatus.textContent.includes('Processing') && !aiProgressStatus.textContent.includes('...')) {
+                aiProgressContainer.classList.add('hidden');
+            }
+        }, 5000);
+    }
+
+    async function callEnrich(postIds) {
+        try {
+            const response = await fetch('/api/enrich', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_ids: postIds })
+            });
+            const results = await response.json();
+            console.log('Enrichment results:', results);
+            await loadHistory();
+        } catch (error) {
+            console.error('Enrichment failed:', error);
+            alert('Enrichment failed. Check console.');
+        }
+    }
+
+    async function callAnnotate(postIds) {
+        try {
+            const response = await fetch('/api/annotate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_ids: postIds })
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                alert('Uploaded successfully!');
+                await loadHistory();
+            } else {
+                alert(`Upload failed: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Upload failed:', error);
+            alert('Upload failed. Check console.');
+        }
+    }
+
+    function updateSelectionUI() {
+        const count = selectedPosts.size;
+        selectedCountDisplay.textContent = count;
+
+        const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
+
+        if (count > 0) {
+            selectionBar.classList.remove('hidden');
+
+            // Contextual buttons for Dashboard
+            if (activeTab === 'dashboard') {
+                const selectedList = allPosts.filter(p => selectedPosts.has(p.post_id));
+                const allPending = selectedList.every(p => !p.status || p.status === 'pending');
+                const allEnriched = selectedList.every(p => p.status === 'enriched');
+
+                enrichBtn.classList.toggle('hidden', !allPending);
+                annotateBtn.classList.toggle('hidden', !allEnriched);
+            } else {
+                enrichBtn.classList.add('hidden');
+                annotateBtn.classList.add('hidden');
+            }
+        } else {
+            selectionBar.classList.add('hidden');
+        }
+
+        // Update all cards in the grid
+        document.querySelectorAll('.card, .mini-card').forEach(card => {
+            const postId = card.getAttribute('data-post-id');
+            if (selectedPosts.has(postId)) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+    }
+
+    function togglePostSelection(postId, forceState = null) {
+        if (forceState !== null) {
+            if (forceState) selectedPosts.add(postId);
+            else selectedPosts.delete(postId);
+        } else {
+            if (selectedPosts.has(postId)) {
+                selectedPosts.delete(postId);
+            } else {
+                selectedPosts.add(postId);
+            }
+        }
+        updateSelectionUI();
+    }
+
+    // Global drag handlers
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            document.body.classList.remove('selecting');
+        }
+    });
+
     async function loadHistory() {
         try {
             const response = await fetch('/api/history');
             allPosts = await response.json();
             totalBadge.textContent = allPosts.length;
-            renderHistory();
+
+            const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+            if (activeTab === 'dashboard') {
+                renderDashboard();
+            } else {
+                renderHistory();
+            }
         } catch (error) {
             console.error('Failed to load history:', error);
         }
+    }
+
+    function renderDashboard() {
+        const pendingList = document.getElementById('pending-list');
+        const enrichedList = document.getElementById('enriched-list');
+        const completedList = document.getElementById('completed-list');
+
+        const pending = allPosts.filter(p => !p.status || p.status === 'pending');
+        const enriched = allPosts.filter(p => p.status === 'enriched');
+        const completed = allPosts.filter(p => p.status === 'completed');
+
+        document.getElementById('stat-pending').textContent = pending.length;
+        document.getElementById('stat-enriched').textContent = enriched.length;
+        document.getElementById('stat-completed').textContent = completed.length;
+
+        pendingList.innerHTML = renderWorkflowColumn(pending);
+        enrichedList.innerHTML = renderWorkflowColumn(enriched);
+        completedList.innerHTML = renderWorkflowColumn(completed);
+
+        // Add clicks for mini cards
+        [pendingList, enrichedList, completedList].forEach(list => {
+            list.querySelectorAll('.mini-card').forEach(card => {
+                const postId = card.getAttribute('data-post-id');
+
+                // Checkbox toggle logic
+                card.querySelector('.mini-select').addEventListener('mousedown', (e) => {
+                    e.stopPropagation();
+                    isDragging = true;
+                    dragTargetState = !selectedPosts.has(postId);
+                    document.body.classList.add('selecting');
+                    togglePostSelection(postId, dragTargetState);
+                });
+
+                card.addEventListener('mouseenter', () => {
+                    if (isDragging) {
+                        togglePostSelection(postId, dragTargetState);
+                    }
+                });
+
+                // Mini card click for modal
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.mini-select')) return;
+                    const post = allPosts.find(p => p.post_id === postId);
+                    if (post) openPostModal(post);
+                });
+            });
+        });
+
+        // Select All handler
+        document.querySelectorAll('.select-all-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const status = btn.getAttribute('data-status');
+                const postsInColumn = allPosts.filter(p => {
+                    if (status === 'pending') return !p.status || p.status === 'pending';
+                    return p.status === status;
+                });
+
+                // Check if all are already selected
+                const allSelected = postsInColumn.every(p => selectedPosts.has(p.post_id));
+
+                postsInColumn.forEach(p => {
+                    if (allSelected) selectedPosts.delete(p.post_id);
+                    else selectedPosts.add(p.post_id);
+                });
+
+                updateSelectionUI();
+                btn.textContent = allSelected ? 'Select All' : 'Deselect All';
+            });
+        });
+
+        // Select Next 100 handler
+        const selectNext100Btn = document.getElementById('select-next-100-btn');
+        if (selectNext100Btn) {
+            selectNext100Btn.addEventListener('click', () => {
+                const pendingPosts = allPosts.filter(p => !p.status || p.status === 'pending');
+                const currentlySelected = Array.from(selectedPosts);
+
+                // Filter out those already selected
+                const remainingPending = pendingPosts.filter(p => !selectedPosts.has(p.post_id));
+
+                // Select next 100
+                const toSelect = remainingPending.slice(0, 100);
+                toSelect.forEach(p => selectedPosts.add(p.post_id));
+
+                updateSelectionUI();
+            });
+        }
+    }
+
+    function renderWorkflowColumn(posts) {
+        if (posts.length === 0) return '<div class="status-message">Empty</div>';
+        return posts.map(p => {
+            const isSelected = selectedPosts.has(p.post_id);
+            return `
+                <div class="mini-card ${isSelected ? 'selected' : ''}" data-post-id="${p.post_id}">
+                    <div class="mini-select"></div>
+                    <img src="${p.image_path}" alt="Thumb">
+                    <div class="mini-info">
+                        <h4>@${p.username}</h4>
+                        <p>${p.caption || 'No caption'}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
     function renderHistory() {
@@ -275,29 +615,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderGrid(posts, container) {
-        if (!posts || posts.length === 0) return;
+        if (!posts || posts.length === 0) {
+            container.innerHTML = '<div class="status-message">No items found in this section.</div>';
+            return;
+        }
 
-        const html = posts.map(post => `
-            <div class="card glass" data-post-id="${post.post_id}">
-                <img src="${post.image_path}" alt="Post by ${post.username}" onerror="this.src='https://via.placeholder.com/300x300?text=Image+Not+Found'">
-                <div class="card-overlay">
-                    <p>${post.caption || 'No caption'}</p>
-                    <div class="card-meta">
-                        <span class="card-date">${new Date(post.timestamp).toLocaleDateString()}</span>
-                        <div class="actions">
-                            <button class="download-btn view-btn"><i class="fas fa-expand"></i></button>
+        const html = posts.map(post => {
+            const status = post.status || 'pending';
+            const isSelected = selectedPosts.has(post.post_id);
+            return `
+                <div class="card glass ${isSelected ? 'selected' : ''}" data-post-id="${post.post_id}">
+                    <div class="card-select"></div>
+                    <div class="status-badge status-${status}">${status}</div>
+                    <img src="${post.image_path}" alt="Post by ${post.username}" onerror="this.src='https://via.placeholder.com/300x300?text=Image+Not+Found'">
+                    <div class="card-overlay">
+                        <p>${post.caption || 'No caption'}</p>
+                        <div class="card-meta">
+                            <span class="card-date">${new Date(post.timestamp).toLocaleDateString()}</span>
+                            <div class="actions">
+                                <button class="download-btn view-btn"><i class="fas fa-expand"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         container.innerHTML = html;
 
-        // Add click listeners for modal
+        // Add click listeners
         container.querySelectorAll('.card').forEach(card => {
+            const postId = card.getAttribute('data-post-id');
+
+            // Selection toggle logic
+            card.querySelector('.card-select').addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                isDragging = true;
+                dragTargetState = !selectedPosts.has(postId);
+                document.body.classList.add('selecting');
+                togglePostSelection(postId, dragTargetState);
+            });
+
+            card.addEventListener('mouseenter', () => {
+                if (isDragging) {
+                    togglePostSelection(postId, dragTargetState);
+                }
+            });
+
+            // Card click for modal (only if not clicking select)
             card.addEventListener('click', (e) => {
-                const postId = card.getAttribute('data-post-id');
+                if (e.target.closest('.card-select')) return;
                 const post = allPosts.find(p => p.post_id === postId) || posts.find(p => p.post_id === postId);
                 if (post) openPostModal(post);
             });
@@ -314,11 +681,57 @@ document.addEventListener('DOMContentLoaded', () => {
         modalDownload.download = `${post.post_id}.jpg`;
         modalLink.href = post.post_url;
 
+        // AI Attributes
+        if (post.ai_data) {
+            aiInfoContainer.classList.remove('hidden');
+            const data = post.ai_data;
+
+            // Header Summary
+            aiTitle.textContent = data.title || 'N/A';
+            aiYear.textContent = data.releaseYear || 'N/A';
+            aiGenre.textContent = data.genre || 'N/A';
+            aiDirector.textContent = data.director || 'N/A';
+
+            // Emotion
+            aiEmotion.textContent = data.emotionLabel || 'N/A';
+            aiEmotionDesc.textContent = data.emotionDescription || '';
+            const related = data.relatedEmotions || [];
+            aiRelatedEmotions.innerHTML = related.map(e => `<span class="badge secondary">${e}</span>`).join('');
+
+            // Actors
+            const actors = data.actors || [];
+            aiActorsList.innerHTML = actors.map(a => `
+                <div class="actor-card">
+                    <h5>${a.name}</h5>
+                    <div class="actor-meta"><i class="fas fa-calendar-alt"></i> ${a.dob || 'Unknown DOB'}</div>
+                    <div class="actor-films">${(a.filmography || []).join(' • ')}</div>
+                </div>
+            `).join('');
+
+            // Dialogs
+            const dialogs = data.dialogs || [];
+            aiDialogsList.innerHTML = dialogs.map(d => `
+                <div class="dialog-bubble">
+                    <div class="dialog-actor">${d.actor}</div>
+                    <div class="dialog-text">"${d.text}"</div>
+                </div>
+            `).join('');
+
+            // Grouped Tags
+            const tags = data.tags || [];
+            aiTagsList.innerHTML = tags.map(t => `
+                <span class="tag" title="${t.category}">${t.name}</span>
+            `).join('');
+        } else {
+            aiInfoContainer.classList.add('hidden');
+        }
+
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 
-    closeModal.addEventListener('click', () => {
+    closeModal.addEventListener('click', (e) => {
+        e.stopPropagation();
         modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
     });

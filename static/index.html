@@ -58,10 +58,26 @@
         </section>
 
         <main>
+            <div id="ai-progress-container" class="progress-wrap glass hidden"
+                style="margin-bottom: 2rem; padding: 1.5rem;">
+                <div class="progress-info">
+                    <div class="progress-labels">
+                        <span id="ai-progress-status"><i class="fas fa-circle-notch fa-spin"></i> AI
+                            Processing...</span>
+                        <div id="ai-current-working-on" class="current-item-info"></div>
+                    </div>
+                    <span id="ai-progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="ai-progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+
             <div class="main-header">
                 <div class="tab-header">
                     <button class="tab-btn active" data-tab="collection">Live Feed</button>
                     <button class="tab-btn" data-tab="history">Archives</button>
+                    <button class="tab-btn" data-tab="dashboard">AI Workflow</button>
                 </div>
                 <div class="filter-controls glass">
                     <i class="fas fa-search"></i>
@@ -88,7 +104,59 @@
                 </div>
                 <div id="history-grid" class="grid"></div>
             </div>
+
+            <div id="dashboard" class="tab-content">
+                <div class="dashboard-stats glass">
+                    <div class="stat-item"><span id="stat-pending">0</span> Pending</div>
+                    <div class="stat-item"><span id="stat-enriched">0</span> Enriched</div>
+                    <div class="stat-item"><span id="stat-completed">0</span> Completed</div>
+                </div>
+
+                <div class="workflow-grid">
+                    <div class="workflow-column glass" id="col-pending">
+                        <div class="col-header">
+                            <h3><i class="fas fa-clock"></i> Pending AI</h3>
+                            <div class="col-actions">
+                                <button class="btn-text-only" id="select-next-100-btn">Select Next 100</button>
+                                <button class="btn-text-only select-all-btn" data-status="pending">Select All</button>
+                            </div>
+                        </div>
+                        <div class="col-content" id="pending-list"></div>
+                    </div>
+                    <div class="workflow-column glass" id="col-enriched">
+                        <div class="col-header">
+                            <h3><i class="fas fa-magic"></i> Enriched (Ready)</h3>
+                            <button class="btn-text-only select-all-btn" data-status="enriched">Select All</button>
+                        </div>
+                        <div class="col-content" id="enriched-list"></div>
+                    </div>
+                    <div class="workflow-column glass" id="col-completed">
+                        <div class="col-header">
+                            <h3><i class="fas fa-check-circle"></i> Completed</h3>
+                            <button class="btn-text-only select-all-btn" data-status="completed">Select All</button>
+                        </div>
+                        <div class="col-content" id="completed-list"></div>
+                    </div>
+                </div>
+            </div>
         </main>
+
+        <div id="selection-bar" class="selection-bar glass hidden">
+            <div class="selection-info">
+                <span id="selected-count">0</span> items selected
+            </div>
+            <div class="selection-actions">
+                <button id="enrich-btn" class="btn-small hidden">
+                    <i class="fas fa-magic"></i> AI Enrich
+                </button>
+                <button id="annotate-btn" class="btn-small btn-primary hidden">
+                    <i class="fas fa-cloud-upload-alt"></i> Bulk Annotate
+                </button>
+                <button id="clear-selection" class="btn-small btn-secondary">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="modal" class="modal hidden">
@@ -102,6 +170,47 @@
                     <h3 id="modal-user">@username</h3>
                     <div class="modal-caption-container">
                         <p id="modal-caption"></p>
+                    </div>
+
+                    <div id="ai-info" class="ai-info hidden">
+                        <div class="ai-header">
+                            <i class="fas fa-robot"></i> AI Enhanced Attributes
+                        </div>
+
+                        <!-- Summary Grid -->
+                        <div class="ai-grid">
+                            <div class="ai-item"><strong>Title:</strong> <span id="ai-title"></span></div>
+                            <div class="ai-item"><strong>Movie Year:</strong> <span id="ai-year"></span></div>
+                            <div class="ai-item"><strong>Genre:</strong> <span id="ai-genre"></span></div>
+                            <div class="ai-item"><strong>Director:</strong> <span id="ai-director"></span></div>
+                        </div>
+
+                        <!-- Emotion Analysis -->
+                        <div class="ai-section">
+                            <h4><i class="fas fa-heart"></i> Emotion Analysis</h4>
+                            <div class="emotion-detail">
+                                <span id="ai-emotion" class="badge"></span>
+                                <p id="ai-emotion-desc"></p>
+                                <div id="ai-related-emotions" class="tags-container"></div>
+                            </div>
+                        </div>
+
+                        <!-- Cast & Characters -->
+                        <div class="ai-section">
+                            <h4><i class="fas fa-users"></i> Cast & Crew</h4>
+                            <div id="ai-actors-list" class="actors-scroll-grid"></div>
+                        </div>
+
+                        <!-- Memorable Dialogs -->
+                        <div class="ai-section">
+                            <h4><i class="fas fa-comment-alt"></i> Dialogs</h4>
+                            <div id="ai-dialogs-list" class="dialogs-container"></div>
+                        </div>
+
+                        <div class="ai-tags">
+                            <strong>Tags:</strong>
+                            <div id="ai-tags-list" class="tags-container"></div>
+                        </div>
                     </div>
                     <div class="modal-info">
                         <span id="modal-date"></span>

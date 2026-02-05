@@ -6,6 +6,9 @@ import os
 import json
 from scraper import InstaScraper
 import asyncio
+from ai_processor import extract_attributes
+import requests
+from typing import List
 
 app = FastAPI()
 scraper = InstaScraper()
@@ -16,6 +19,9 @@ os.makedirs("storage/instagram", exist_ok=True)
 class ScrapeRequest(BaseModel):
     username: str
     limit: int = 10
+
+class BulkPostRequest(BaseModel):
+    post_ids: List[str]
 
 @app.post("/api/scrape")
 async def scrape(req: ScrapeRequest):
@@ -83,6 +89,114 @@ async def delete_folder(username: str):
     if not success:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "Folder deleted"}
+
+@app.post("/api/enrich")
+async def enrich_memes(req: BulkPostRequest):
+    print(f"Enriching memes: {req.post_ids}")
+    history = []
+    if os.path.exists("storage/metadata.json"):
+        with open("storage/metadata.json", "r") as f:
+            history = json.load(f)
+    
+    results = []
+    updated = False
+    
+    for post_id in req.post_ids:
+        post = next((h for h in history if h['post_id'] == post_id), None)
+        if not post:
+            results.append({"post_id": post_id, "status": "error", "message": "Post not found"})
+            continue
+            
+        # Map /images/user/id.jpg to storage/instagram/user/id.jpg
+        img_path = post['image_path'].replace("/images/", "storage/instagram/")
+        if not os.path.exists(img_path):
+             results.append({"post_id": post_id, "status": "error", "message": "Image file not found"})
+             continue
+             
+        # Extract attributes using Gemini
+        try:
+            ai_data = extract_attributes(img_path, post.get('caption', ''))
+            if "error" in ai_data:
+                results.append({"post_id": post_id, "status": "error", "message": ai_data["error"]})
+                continue
+                
+            post['ai_data'] = ai_data
+            post['status'] = 'enriched'
+            updated = True
+            results.append({"post_id": post_id, "status": "success"})
+        except Exception as e:
+            results.append({"post_id": post_id, "status": "error", "message": str(e)})
+
+    if updated:
+        with open("storage/metadata.json", "w") as f:
+            json.dump(history, f, indent=2)
+            
+    return results
+
+@app.post("/api/annotate")
+async def annotate_bulk(req: BulkPostRequest):
+    print(f"Annotating memes: {req.post_ids}")
+    history = []
+    if os.path.exists("storage/metadata.json"):
+        with open("storage/metadata.json", "r") as f:
+            history = json.load(f)
+            
+    posts_to_upload = [h for h in history if h['post_id'] in req.post_ids and h.get('status') == 'enriched']
+    
+    if not posts_to_upload:
+        raise HTTPException(status_code=400, detail="No enriched posts found to upload.")
+    
+    # Format data for the weird form-data structure
+    # items[0]title, items[0]actors[0]name, etc.
+    form_data = {}
+    
+    for i, post in enumerate(posts_to_upload):
+        data = post['ai_data']
+        # Simple fields
+        form_data[f"items[{i}]title"] = data.get("title", "")
+        form_data[f"items[{i}]releaseYear"] = data.get("releaseYear", "")
+        form_data[f"items[{i}]genre"] = data.get("genre", "")
+        form_data[f"items[{i}]director"] = data.get("director", "")
+        form_data[f"items[{i}]emotionLabel"] = data.get("emotionLabel", "")
+        form_data[f"items[{i}]emotionDescription"] = data.get("emotionDescription", "")
+        form_data[f"items[{i}]memeReleaseYear"] = data.get("memeReleaseYear", "")
+        form_data[f"items[{i}]imageSize"] = "1024,1024" # Default as per sample
+        
+        # Actors
+        for j, actor in enumerate(data.get("actors", [])):
+            form_data[f"items[{i}]actors[{j}]name"] = actor.get("name", "")
+            form_data[f"items[{i}]actors[{j}]dob"] = actor.get("dob", "")
+            form_data[f"items[{i}]actors[{j}]filmography"] = actor.get("filmography", "")
+            
+        # Dialogs
+        for j, dialog in enumerate(data.get("dialogs", [])):
+            form_data[f"items[{i}]dialogs[{j}]text"] = dialog.get("text", "")
+            form_data[f"items[{i}]dialogs[{j}]actor"] = dialog.get("actor", "")
+            
+        # Tags
+        for j, tag in enumerate(data.get("tags", [])):
+            form_data[f"items[{i}]tags[{j}]name"] = tag.get("name", "")
+            form_data[f"items[{i}]tags[{j}]category"] = tag.get("category", "")
+
+    # Send to external API
+    try:
+        url = os.getenv("ANNOTATE_API_URL")
+        response = requests.post(url, data=form_data)
+        
+        if response.status_code in [200, 201]:
+            # Mark as completed
+            for post in posts_to_upload:
+                post['status'] = 'completed'
+            
+            with open("storage/metadata.json", "w") as f:
+                json.dump(history, f, indent=2)
+                
+            return {"status": "success", "message": "Bulk upload successful", "api_response": response.text}
+        else:
+            return {"status": "error", "message": f"API returned {response.status_code}", "detail": response.text}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Serve images from storage/instagram
 app.mount("/images", StaticFiles(directory="storage/instagram"), name="images")

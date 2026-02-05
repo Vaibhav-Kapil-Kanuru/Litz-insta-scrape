@@ -86,7 +86,8 @@ class InstaScraper:
                     "image_path": f"/images/{username}/{post_id}.jpg",
                     "timestamp": post.date.isoformat(),
                     "scraped_at": datetime.now().isoformat(),
-                    "username": username
+                    "username": username,
+                    "status": "pending"
                 }
                 
                 history.append(metadata)
@@ -205,7 +206,8 @@ class InstaScraper:
                         "image_path": f"/images/{username}/{img_filename}",
                         "timestamp": item.get("timestamp") or datetime.now().isoformat(),
                         "scraped_at": datetime.now().isoformat(),
-                        "username": username
+                        "username": username,
+                        "status": "pending"
                     }
                     
                     history.append(metadata)

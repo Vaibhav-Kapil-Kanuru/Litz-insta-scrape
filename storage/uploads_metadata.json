@@ -1,0 +1,259 @@
+[
+  {
+    "post_id": "up_1770285552720",
+    "username": "Manual Upload",
+    "image_path": "/upload-images/up_1770285552720.jpg",
+    "status": "enriched",
+    "caption": "",
+    "ai_data": {
+      "title": "Custody",
+      "releaseYear": 2023,
+      "genre": "Action Thriller",
+      "director": "Venkat Prabhu",
+      "emotionLabel": "Contempt",
+      "emotionDescription": "The meme depicts a mix of contempt from one character and deference from the other, creating a scenario where one is dismissive and the other is pleading or trying to explain themselves.",
+      "relatedEmotions": [
+        "Dismissal",
+        "Humiliation",
+        "Defensiveness"
+      ],
+      "memeReleaseYear": 2023,
+      "actors": [
+        {
+          "name": "Naga Chaitanya Akkineni",
+          "dob": "1986-11-23",
+          "filmography": [
+            "Majili",
+            "Premam",
+            "Ye Maaya Chesave"
+          ]
+        },
+        {
+          "name": "Sarathkumar",
+          "dob": "1954-07-14",
+          "filmography": [
+            "Pulan Visaranai",
+            "Suryavamsam",
+            "Kanchana"
+          ]
+        }
+      ],
+      "dialogs": [
+        {
+          "text": "The scene likely involves heated discussion or argument where someone is blamed or called out.",
+          "actor": "Unknown"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Argument",
+          "category": "situation"
+        },
+        {
+          "name": "Confrontation",
+          "category": "situation"
+        },
+        {
+          "name": "Power dynamics",
+          "category": "concept"
+        },
+        {
+          "name": "Underdog",
+          "category": "character"
+        },
+        {
+          "name": "Authority",
+          "category": "character"
+        },
+        {
+          "name": "Intimidation",
+          "category": "situation"
+        },
+        {
+          "name": "Accusation",
+          "category": "situation"
+        },
+        {
+          "name": "Crime",
+          "category": "context"
+        }
+      ]
+    },
+    "timestamp": 1770285552.722101
+  },
+  {
+    "post_id": "up_1770285638080",
+    "username": "Manual Upload",
+    "image_path": "/upload-images/up_1770285638080.jpg",
+    "status": "enriched",
+    "caption": "",
+    "ai_data": {
+      "title": "HIT: The Second Case",
+      "releaseYear": 2022,
+      "genre": "Action Thriller",
+      "director": "Sailesh Kolanu",
+      "emotionLabel": "Tension",
+      "emotionDescription": "The scene shows a tense confrontation, as the characters are staring at each other aggressively. The close proximity of the faces adds to the intensity.",
+      "relatedEmotions": [
+        "Antagonism",
+        "Suspense",
+        "Aggression"
+      ],
+      "memeReleaseYear": 2023,
+      "actors": [
+        {
+          "name": "Nani",
+          "dob": "1984-02-24",
+          "filmography": [
+            "Eega",
+            "Jersey",
+            "Ala Modalaindi"
+          ]
+        },
+        {
+          "name": "Rao Ramesh",
+          "dob": "1968-05-25",
+          "filmography": [
+            "Magadheera",
+            "Gamyam",
+            "Julayi"
+          ]
+        }
+      ],
+      "dialogs": [
+        {
+          "text": "You think you can get away with this?",
+          "actor": "Nani"
+        },
+        {
+          "text": "Try me.",
+          "actor": "Rao Ramesh"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Staredown",
+          "category": "situation"
+        },
+        {
+          "name": "Intense",
+          "category": "concept"
+        },
+        {
+          "name": "Confrontation",
+          "category": "situation"
+        },
+        {
+          "name": "Police",
+          "category": "context"
+        },
+        {
+          "name": "HIT",
+          "category": "character"
+        },
+        {
+          "name": "Detective",
+          "category": "character"
+        },
+        {
+          "name": "Crime",
+          "category": "context"
+        }
+      ]
+    },
+    "timestamp": 1770285638.083078
+  },
+  {
+    "post_id": "up_1770285713539",
+    "username": "Manual Upload",
+    "image_path": "/upload-images/up_1770285713539.jpg",
+    "status": "enriched",
+    "caption": "",
+    "ai_data": {
+      "title": "Ninne Pelladatha",
+      "releaseYear": 1996,
+      "genre": "Romantic Drama",
+      "director": "Krishna Vamsi",
+      "emotionLabel": "Confusion",
+      "emotionDescription": "The woman appears confused or shocked by the actions of the men below, who are comically spraying something from their mouths.",
+      "relatedEmotions": [
+        "Disbelief",
+        "Surprise",
+        "Bewilderment"
+      ],
+      "memeReleaseYear": 2020,
+      "actors": [
+        {
+          "name": "Nagarjuna Akkineni",
+          "dob": "1959-08-29",
+          "filmography": [
+            "Shiva",
+            "Manam",
+            "Oopiri",
+            "Wild Dog"
+          ]
+        },
+        {
+          "name": "Tabu",
+          "dob": "1971-11-04",
+          "filmography": [
+            "Maachis",
+            "Chandni Bar",
+            "Haider",
+            "Andhadhun"
+          ]
+        },
+        {
+          "name": "L. B. Sriram",
+          "dob": "1957-09-13",
+          "filmography": [
+            "Chanti",
+            "Hello Brother",
+            "Aditya 369"
+          ]
+        }
+      ],
+      "dialogs": [
+        {
+          "text": "(Dialogs would be in Telugu, so translation is not straightforward)",
+          "actor": "Unknown"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Confusion",
+          "category": "concept"
+        },
+        {
+          "name": "Shock",
+          "category": "concept"
+        },
+        {
+          "name": "Telugu Cinema",
+          "category": "context"
+        },
+        {
+          "name": "Comedic Scene",
+          "category": "situation"
+        },
+        {
+          "name": "Nagarjuna",
+          "category": "character"
+        },
+        {
+          "name": "Tabu",
+          "category": "character"
+        },
+        {
+          "name": "Spraying Liquid",
+          "category": "situation"
+        },
+        {
+          "name": "LB Sriram",
+          "category": "character"
+        }
+      ]
+    },
+    "timestamp": 1770285713.5442612
+  }
+]

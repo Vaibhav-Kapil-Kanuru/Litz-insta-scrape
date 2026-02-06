@@ -8,7 +8,7 @@ load_dotenv()
 
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-model = genai.GenerativeModel('gemini-flash-latest')
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 PROMPT = """
 You are an expert at identifying memes from movies and TV shows. 
@@ -65,6 +65,27 @@ def extract_attributes(image_path, caption):
         return json.loads(text)
     except Exception as e:
         print(f"Error in extract_attributes: {e}")
+        return {"error": str(e)}
+
+async def extract_attributes_async(image_path, caption):
+    try:
+        if not os.path.exists(image_path):
+            return {"error": f"File not found: {image_path}"}
+
+        img = Image.open(image_path)
+        
+        response = await model.generate_content_async([PROMPT + f"\n\nCaption: {caption}", img])
+        
+        text = response.text.strip()
+        
+        if text.startswith("```json"):
+            text = text[7:-3].strip()
+        elif text.startswith("```"):
+            text = text[3:-3].strip()
+            
+        return json.loads(text)
+    except Exception as e:
+        print(f"Error in extract_attributes_async: {e}")
         return {"error": str(e)}
 
 if __name__ == "__main__":

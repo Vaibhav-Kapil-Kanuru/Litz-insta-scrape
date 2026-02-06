@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InstaCollector | Premium Image Scraper</title>
+    <title>Litzchill | Premium AI Archiver</title>
     <link rel="stylesheet" href="/static/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -12,17 +12,49 @@
 </head>
 
 <body>
-    <div class="background-blobs">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-modal glass">
+            <div class="auth-header">
+                <i class="fab fa-instagram"></i>
+                <h2>Litzchill</h2>
+                <p>Unlock AI Annotation & High-Speed Enrichment</p>
+            </div>
+            <form id="login-form" class="auth-form">
+                <div class="auth-input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="auth-user" placeholder="Email or Username" required>
+                </div>
+                <div class="auth-input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="auth-pass" placeholder="Password" required>
+                </div>
+                <div class="auth-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="auth-remember" checked>
+                        <span class="checkmark"></span>
+                        Remember Me
+                    </label>
+                </div>
+                <div id="auth-error" class="auth-error hidden">Invalid credentials. Please try again.</div>
+                <button type="submit" id="login-btn" class="login-btn">
+                    <span class="btn-text">Sign In</span>
+                    <i class="fas fa-spinner fa-spin hidden"></i>
+                </button>
+            </form>
+        </div>
     </div>
 
-    <div class="container">
+    <div id="main-container" class="container hidden">
         <header>
-            <div class="logo">
-                <i class="fab fa-instagram"></i>
-                <h1>Insta<span>Collector</span> <span id="total-badge" class="badge">0</span></h1>
+            <div class="logo-row">
+                <div class="logo">
+                    <i class="fab fa-instagram"></i>
+                    <h1>Litz<span>chill</span> <span id="total-badge" class="badge">0</span></h1>
+                </div>
+                <div id="user-profile" class="user-profile hidden">
+                    <span id="display-user">@user</span>
+                    <button id="logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
             </div>
             <p class="subtitle">Premium Public Content Archiver</p>
         </header>
@@ -58,8 +90,7 @@
         </section>
 
         <main>
-            <div id="ai-progress-container" class="progress-wrap glass hidden"
-                style="margin-bottom: 2rem; padding: 1.5rem;">
+            <div id="ai-progress-container" class="progress-wrap glass hidden">
                 <div class="progress-info">
                     <div class="progress-labels">
                         <span id="ai-progress-status"><i class="fas fa-circle-notch fa-spin"></i> AI
@@ -78,6 +109,7 @@
                     <button class="tab-btn active" data-tab="collection">Live Feed</button>
                     <button class="tab-btn" data-tab="history">Archives</button>
                     <button class="tab-btn" data-tab="dashboard">AI Workflow</button>
+                    <button class="tab-btn" data-tab="manual">Manual Enrichment</button>
                 </div>
                 <div class="filter-controls glass">
                     <i class="fas fa-search"></i>
@@ -126,7 +158,10 @@
                     <div class="workflow-column glass" id="col-enriched">
                         <div class="col-header">
                             <h3><i class="fas fa-magic"></i> Enriched (Ready)</h3>
-                            <button class="btn-text-only select-all-btn" data-status="enriched">Select All</button>
+                            <div class="col-actions">
+                                <button class="btn-text-only" id="select-next-100-enriched-btn">Select Next 100</button>
+                                <button class="btn-text-only select-all-btn" data-status="enriched">Select All</button>
+                            </div>
                         </div>
                         <div class="col-content" id="enriched-list"></div>
                     </div>
@@ -138,6 +173,24 @@
                         <div class="col-content" id="completed-list"></div>
                     </div>
                 </div>
+            </div>
+            <div id="manual" class="tab-content">
+                <div class="manual-upload-section glass">
+                    <div class="manual-upload-box" id="drop-zone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & Drop Images or Click to Upload</p>
+                        <input type="file" id="manual-image-input" accept="image/*" multiple class="hidden">
+                        <button id="manual-upload-btn" class="btn-primary">Select Images</button>
+                    </div>
+                </div>
+                <div class="manual-header workflow-header">
+                    <h3>Uploaded Images</h3>
+                    <div class="manual-actions">
+                        <button class="btn-small select-all-btn" data-status="pending" data-source="manual">Select All
+                            Pending</button>
+                    </div>
+                </div>
+                <div id="manual-grid" class="grid"></div>
             </div>
         </main>
 

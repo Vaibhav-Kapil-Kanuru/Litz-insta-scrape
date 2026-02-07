@@ -434,6 +434,49 @@ button:active {
     min-width: auto;
 }
 
+.delete-btn {
+    background: rgba(255, 0, 80, 0.1);
+    border: 1px solid rgba(255, 0, 80, 0.2);
+    color: var(--primary);
+    padding: 0.5rem;
+    border-radius: 8px;
+    min-width: auto;
+    margin-left: 0.5rem;
+}
+
+.delete-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.mini-delete {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 0, 80, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.mini-card:hover .mini-delete {
+    opacity: 1;
+}
+
+.mini-delete:hover {
+    background: var(--primary);
+}
+
 /* Status Message */
 .status-message {
     text-align: center;

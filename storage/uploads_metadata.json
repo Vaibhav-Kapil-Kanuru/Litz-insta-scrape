@@ -1,259 +1,341 @@
 [
   {
-    "post_id": "up_1770285552720",
+    "post_id": "up_1770373043771",
     "username": "Manual Upload",
-    "image_path": "/upload-images/up_1770285552720.jpg",
+    "image_path": "/upload-images/up_1770373043771.jpg",
     "status": "enriched",
     "caption": "",
     "ai_data": {
-      "title": "Custody",
-      "releaseYear": 2023,
-      "genre": "Action Thriller",
-      "director": "Venkat Prabhu",
-      "emotionLabel": "Contempt",
-      "emotionDescription": "The meme depicts a mix of contempt from one character and deference from the other, creating a scenario where one is dismissive and the other is pleading or trying to explain themselves.",
+      "title": "1: Nenokkadine",
+      "releaseYear": 2014,
+      "genre": "Psychological Thriller",
+      "director": "Sukumar",
+      "emotionLabel": "Pathos",
+      "emotionDescription": "This scene depicts a profound moment of emotional release and sorrow as the protagonist interacts with a younger version of himself, symbolizing the healing of deep-seated childhood trauma.",
       "relatedEmotions": [
-        "Dismissal",
-        "Humiliation",
-        "Defensiveness"
+        "Sadness",
+        "Grief",
+        "Compassion"
       ],
-      "memeReleaseYear": 2023,
+      "memeReleaseYear": 2014,
       "actors": [
         {
-          "name": "Naga Chaitanya Akkineni",
-          "dob": "1986-11-23",
+          "name": "Mahesh Babu",
+          "dob": "1975-08-09",
           "filmography": [
-            "Majili",
-            "Premam",
-            "Ye Maaya Chesave"
+            "Pokiri",
+            "Dookudu",
+            "Okkadu",
+            "Srimanthudu"
           ]
         },
         {
-          "name": "Sarathkumar",
-          "dob": "1954-07-14",
+          "name": "Gautham Krishna",
+          "dob": "2006-08-31",
           "filmography": [
-            "Pulan Visaranai",
-            "Suryavamsam",
-            "Kanchana"
+            "1: Nenokkadine"
           ]
         }
       ],
       "dialogs": [
         {
-          "text": "The scene likely involves heated discussion or argument where someone is blamed or called out.",
-          "actor": "Unknown"
+          "text": "Nanna...",
+          "actor": "Gautham Krishna"
+        },
+        {
+          "text": "Nenu ninnu eppatiki vadhili vellanu.",
+          "actor": "Mahesh Babu"
         }
       ],
       "tags": [
         {
-          "name": "Argument",
+          "name": "Mahesh Babu",
+          "category": "character"
+        },
+        {
+          "name": "Emotional Breakdown",
           "category": "situation"
         },
         {
-          "name": "Confrontation",
-          "category": "situation"
-        },
-        {
-          "name": "Power dynamics",
+          "name": "Childhood Trauma",
           "category": "concept"
         },
         {
-          "name": "Underdog",
-          "category": "character"
-        },
-        {
-          "name": "Authority",
-          "category": "character"
-        },
-        {
-          "name": "Intimidation",
-          "category": "situation"
-        },
-        {
-          "name": "Accusation",
-          "category": "situation"
-        },
-        {
-          "name": "Crime",
+          "name": "Psychological Drama",
           "category": "context"
-        }
-      ]
-    },
-    "timestamp": 1770285552.722101
-  },
-  {
-    "post_id": "up_1770285638080",
-    "username": "Manual Upload",
-    "image_path": "/upload-images/up_1770285638080.jpg",
-    "status": "enriched",
-    "caption": "",
-    "ai_data": {
-      "title": "HIT: The Second Case",
-      "releaseYear": 2022,
-      "genre": "Action Thriller",
-      "director": "Sailesh Kolanu",
-      "emotionLabel": "Tension",
-      "emotionDescription": "The scene shows a tense confrontation, as the characters are staring at each other aggressively. The close proximity of the faces adds to the intensity.",
-      "relatedEmotions": [
-        "Antagonism",
-        "Suspense",
-        "Aggression"
-      ],
-      "memeReleaseYear": 2023,
-      "actors": [
-        {
-          "name": "Nani",
-          "dob": "1984-02-24",
-          "filmography": [
-            "Eega",
-            "Jersey",
-            "Ala Modalaindi"
-          ]
         },
         {
-          "name": "Rao Ramesh",
-          "dob": "1968-05-25",
-          "filmography": [
-            "Magadheera",
-            "Gamyam",
-            "Julayi"
-          ]
-        }
-      ],
-      "dialogs": [
-        {
-          "text": "You think you can get away with this?",
-          "actor": "Nani"
-        },
-        {
-          "text": "Try me.",
-          "actor": "Rao Ramesh"
-        }
-      ],
-      "tags": [
-        {
-          "name": "Staredown",
-          "category": "situation"
-        },
-        {
-          "name": "Intense",
+          "name": "Father-Son Bond",
           "category": "concept"
         },
         {
-          "name": "Confrontation",
-          "category": "situation"
-        },
-        {
-          "name": "Police",
+          "name": "Tollywood",
           "category": "context"
         },
         {
-          "name": "HIT",
-          "category": "character"
-        },
-        {
-          "name": "Detective",
-          "category": "character"
-        },
-        {
-          "name": "Crime",
-          "category": "context"
+          "name": "Catharsis",
+          "category": "concept"
         }
       ]
     },
-    "timestamp": 1770285638.083078
+    "timestamp": 1770373043.772785
   },
   {
-    "post_id": "up_1770285713539",
+    "post_id": "up_1770373095204",
     "username": "Manual Upload",
-    "image_path": "/upload-images/up_1770285713539.jpg",
+    "image_path": "/upload-images/up_1770373095204.jpg",
     "status": "enriched",
     "caption": "",
     "ai_data": {
-      "title": "Ninne Pelladatha",
-      "releaseYear": 1996,
-      "genre": "Romantic Drama",
-      "director": "Krishna Vamsi",
+      "title": "Dookudu",
+      "releaseYear": 2011,
+      "genre": "Action Comedy",
+      "director": "Srinu Vaitla",
       "emotionLabel": "Confusion",
-      "emotionDescription": "The woman appears confused or shocked by the actions of the men below, who are comically spraying something from their mouths.",
+      "emotionDescription": "The character Padmasri is attempting to 'visualize' a scene as part of a prank reality show, leading to a look of comical concentration followed by utter confusion when he can't recall the imaginary details.",
       "relatedEmotions": [
-        "Disbelief",
-        "Surprise",
-        "Bewilderment"
+        "Delusion",
+        "Concentration",
+        "Self-doubt"
       ],
-      "memeReleaseYear": 2020,
+      "memeReleaseYear": 2016,
       "actors": [
         {
-          "name": "Nagarjuna Akkineni",
-          "dob": "1959-08-29",
+          "name": "Brahmanandam",
+          "dob": "1956-02-01",
           "filmography": [
-            "Shiva",
-            "Manam",
-            "Oopiri",
-            "Wild Dog"
+            "Aha Naa Pellanta",
+            "Ready",
+            "Race Gurram",
+            "Manmadhudu"
           ]
         },
         {
-          "name": "Tabu",
-          "dob": "1971-11-04",
+          "name": "Brahmaji",
+          "dob": "1965-04-25",
           "filmography": [
-            "Maachis",
-            "Chandni Bar",
-            "Haider",
-            "Andhadhun"
+            "Khadgam",
+            "Ninne Pelladata",
+            "Maryada Ramanna",
+            "Pushpa: The Rise"
           ]
         },
         {
-          "name": "L. B. Sriram",
-          "dob": "1957-09-13",
+          "name": "Vennela Kishore",
+          "dob": "1980-09-19",
           "filmography": [
-            "Chanti",
-            "Hello Brother",
-            "Aditya 369"
+            "Vennela",
+            "Bhale Bhale Magadivoy",
+            "Geetha Govindam",
+            "Eega"
           ]
         }
       ],
       "dialogs": [
         {
-          "text": "(Dialogs would be in Telugu, so translation is not straightforward)",
-          "actor": "Unknown"
+          "text": "Padmasri... okasari mind lo aa scene visualize chesko.",
+          "actor": "Brahmaji"
+        },
+        {
+          "text": "Raavatledenti? Naaku gurtu raavatledenti?",
+          "actor": "Brahmanandam"
         }
       ],
       "tags": [
+        {
+          "name": "Brahmanandam",
+          "category": "character"
+        },
+        {
+          "name": "Padmasri",
+          "category": "character"
+        },
+        {
+          "name": "Prank",
+          "category": "situation"
+        },
+        {
+          "name": "Reality Show",
+          "category": "context"
+        },
         {
           "name": "Confusion",
           "category": "concept"
         },
         {
-          "name": "Shock",
+          "name": "Tollywood",
+          "category": "context"
+        },
+        {
+          "name": "Visualization",
           "category": "concept"
+        }
+      ]
+    },
+    "timestamp": 1770373095.205843
+  },
+  {
+    "post_id": "up_1770373219011",
+    "username": "Manual Upload",
+    "image_path": "/upload-images/up_1770373219011.jpg",
+    "status": "enriched",
+    "caption": "",
+    "ai_data": {
+      "title": "Vettam",
+      "releaseYear": 2004,
+      "genre": "Romantic Comedy",
+      "director": "Priyadarshan",
+      "emotionLabel": "Amusement",
+      "emotionDescription": "The scene captures the character Mani attempting to look suave or sophisticated with a simple steel container, which causes the female character to giggle uncontrollably at his awkward confidence.",
+      "relatedEmotions": [
+        "Silliness",
+        "Awkwardness",
+        "Joy"
+      ],
+      "memeReleaseYear": 2018,
+      "actors": [
+        {
+          "name": "Jagadish",
+          "dob": "1955-06-12",
+          "filmography": [
+            "In Harihar Nagar",
+            "Godfather",
+            "Mukhachitram",
+            "Kakkakuyil"
+          ]
+        },
+        {
+          "name": "Sreejaya Nair",
+          "dob": "1977-05-01",
+          "filmography": [
+            "Veendum Chila Veettukaryangal",
+            "Stalin Sivadas",
+            "Lelam",
+            "Summer in Bethlehem"
+          ]
+        }
+      ],
+      "dialogs": [
+        {
+          "text": "(Mani acts with stylish mannerisms while holding a steel tumbler to impress Janaki)",
+          "actor": "Jagadish"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Mani",
+          "category": "character"
+        },
+        {
+          "name": "Malayalam Cinema",
+          "category": "context"
+        },
+        {
+          "name": "Steel Tumbler",
+          "category": "situation"
+        },
+        {
+          "name": "Awkward Flex",
+          "category": "concept"
+        },
+        {
+          "name": "Trying to Impress",
+          "category": "situation"
+        },
+        {
+          "name": "Jagadish Comedy",
+          "category": "context"
+        },
+        {
+          "name": "Crush",
+          "category": "situation"
+        }
+      ]
+    },
+    "timestamp": 1770373219.014456
+  },
+  {
+    "post_id": "up_1770373298476",
+    "username": "Manual Upload",
+    "image_path": "/upload-images/up_1770373298476.jpg",
+    "status": "enriched",
+    "caption": "",
+    "ai_data": {
+      "title": "Nuvvu Naaku Nachav",
+      "releaseYear": 2001,
+      "genre": "Romance/Comedy",
+      "director": "K. Vijaya Bhaskar",
+      "emotionLabel": "Mischief",
+      "emotionDescription": "The scene illustrates Venky's playful nature as he repeatedly calls his friend Murthy from a public phone just to annoy him with trivial talk, creating a humorous contrast between his amusement and Murthy's rising frustration.",
+      "relatedEmotions": [
+        "Amusement",
+        "Frustration",
+        "Witty"
+      ],
+      "memeReleaseYear": 2014,
+      "actors": [
+        {
+          "name": "Venkatesh Daggubati",
+          "dob": "1960-12-13",
+          "filmography": [
+            "Kshana Kshanam",
+            "Bobbili Raja",
+            "Drushyam",
+            "F2: Fun and Frustration"
+          ]
+        },
+        {
+          "name": "Prakash Raj",
+          "dob": "1965-03-26",
+          "filmography": [
+            "Iruvar",
+            "Bommarillu",
+            "Pokiri",
+            "Singham"
+          ]
+        }
+      ],
+      "dialogs": [
+        {
+          "text": "Hello, evaru?",
+          "actor": "Prakash Raj"
+        },
+        {
+          "text": "Nene.. Venky ni!",
+          "actor": "Venkatesh Daggubati"
+        }
+      ],
+      "tags": [
+        {
+          "name": "Venky",
+          "category": "character"
+        },
+        {
+          "name": "Murthy",
+          "category": "character"
+        },
+        {
+          "name": "Prank Call",
+          "category": "situation"
+        },
+        {
+          "name": "Public Phone",
+          "category": "context"
         },
         {
           "name": "Telugu Cinema",
           "category": "context"
         },
         {
-          "name": "Comedic Scene",
-          "category": "situation"
+          "name": "Annoyance",
+          "category": "concept"
         },
         {
-          "name": "Nagarjuna",
-          "category": "character"
-        },
-        {
-          "name": "Tabu",
-          "category": "character"
-        },
-        {
-          "name": "Spraying Liquid",
-          "category": "situation"
-        },
-        {
-          "name": "LB Sriram",
-          "category": "character"
+          "name": "Mischief",
+          "category": "concept"
         }
       ]
     },
-    "timestamp": 1770285713.5442612
+    "timestamp": 1770373298.478268
   }
 ]

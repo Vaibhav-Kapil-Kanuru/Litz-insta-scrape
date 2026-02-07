@@ -104,6 +104,46 @@ async def delete_folder(username: str):
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "Folder deleted"}
 
+@app.delete("/api/meme/{post_id}")
+async def delete_meme(post_id: str):
+    # 1. Try to find in scraped history
+    scraped_path = "storage/metadata.json"
+    if os.path.exists(scraped_path):
+        with open(scraped_path, "r") as f:
+            scraped_history = json.load(f)
+        
+        post_index = next((i for i, p in enumerate(scraped_history) if p['post_id'] == post_id), None)
+        if post_index is not None:
+            post = scraped_history.pop(post_index)
+            # Delete image file
+            img_path = post['image_path'].replace("/images/", "storage/instagram/")
+            if os.path.exists(img_path):
+                os.remove(img_path)
+            
+            with open(scraped_path, "w") as f:
+                json.dump(scraped_history, f, indent=2)
+            return {"message": "Meme deleted from archive"}
+
+    # 2. Try to find in manual uploads
+    manual_path = "storage/uploads_metadata.json"
+    if os.path.exists(manual_path):
+        with open(manual_path, "r") as f:
+            manual_history = json.load(f)
+        
+        post_index = next((i for i, p in enumerate(manual_history) if p['post_id'] == post_id), None)
+        if post_index is not None:
+            post = manual_history.pop(post_index)
+            # Delete image file
+            img_path = post['image_path'].replace("/upload-images/", "storage/uploads/")
+            if os.path.exists(img_path):
+                os.remove(img_path)
+            
+            with open(manual_path, "w") as f:
+                json.dump(manual_history, f, indent=2)
+            return {"message": "Meme deleted from uploads"}
+
+    raise HTTPException(status_code=404, detail="Meme not found")
+
 @app.post("/api/auth/signin")
 async def signin(req: SigninRequest):
     url = os.getenv("SUPABASE_SIGNIN_URL")

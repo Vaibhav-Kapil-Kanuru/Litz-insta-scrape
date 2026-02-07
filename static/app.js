@@ -628,6 +628,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.addEventListener('mouseenter', () => { if (isDragging) togglePostSelection(postId, dragTargetState); });
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.mini-select')) return;
+                    if (e.target.closest('.mini-delete')) {
+                        deleteMeme(postId);
+                        return;
+                    }
                     const post = allPosts.find(p => p.post_id === postId);
                     if (post) openPostModal(post);
                 });
@@ -671,6 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return posts.map(p => `
             <div class="mini-card ${selectedPosts.has(p.post_id) ? 'selected' : ''}" data-post-id="${p.post_id}">
                 <div class="mini-select"></div>
+                <div class="mini-delete"><i class="fas fa-trash"></i></div>
                 <img src="${p.image_path}" alt="Thumb">
                 <div class="mini-info">
                     <h4>@${p.username}</h4>
@@ -746,7 +751,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="card-meta">
                             <span class="card-date">${new Date(post.timestamp).toLocaleDateString()}</span>
                             <div class="actions">
-                                <button class="download-btn view-btn"><i class="fas fa-expand"></i></button>
+                                <button class="view-btn download-btn"><i class="fas fa-expand"></i></button>
+                                <button class="delete-meme-btn delete-btn"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     </div>
@@ -778,6 +784,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Card click for modal (only if not clicking select)
             card.addEventListener('click', (e) => {
                 if (e.target.closest('.card-select')) return;
+                if (e.target.closest('.delete-meme-btn')) {
+                    deleteMeme(postId);
+                    return;
+                }
                 const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
                 const sourcePosts = activeTab === 'manual' ? manualPosts : allPosts;
                 const post = sourcePosts.find(p => p.post_id === postId) || posts.find(p => p.post_id === postId);
@@ -857,6 +867,25 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.style.overflow = 'auto';
         }
     });
+
+    async function deleteMeme(postId) {
+        if (!confirm('Litzchill: Are you sure you want to delete this meme?')) return;
+
+        try {
+            const response = await fetch(`/api/meme/${postId}`, { method: 'DELETE' });
+            if (response.ok) {
+                selectedPosts.delete(postId);
+                const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
+                if (activeTab === 'manual') await loadManualHistory();
+                else await loadHistory();
+                updateSelectionUI();
+            } else {
+                alert('Litzchill: Failed to delete meme');
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     function setLoading(isLoading, btn = scrapeBtn) {
         const btnText = btn.querySelector('.btn-text, span:not(.loader)');

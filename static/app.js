@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedCountDisplay = document.getElementById('selected-count');
     const enrichBtn = document.getElementById('enrich-btn'); // Restored
     const annotateBtn = document.getElementById('annotate-btn'); // Restored
+    const statusUpdateWrapper = document.getElementById('status-update-wrapper');
+    const statusSelect = document.getElementById('status-select');
     const clearSelectionBtn = document.getElementById('clear-selection');
 
     // AI Progress elements
@@ -323,6 +325,45 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSelectionUI();
     });
 
+    statusSelect.addEventListener('change', async (e) => {
+        const newStatus = e.target.value;
+        if (!newStatus) return;
+
+        const ids = Array.from(selectedPosts);
+        if (ids.length === 0) return;
+
+        if (!confirm(`Litzchill: Change status of ${ids.length} items to '${newStatus}'?`)) {
+            statusSelect.value = '';
+            return;
+        }
+
+        try {
+            setLoading(true, statusSelect);
+            const response = await fetch('/api/memes/update-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ post_ids: ids, status: newStatus })
+            });
+
+            if (response.ok) {
+                selectedPosts.clear();
+                const activeTab = document.querySelector('.tab-btn.active')?.getAttribute('data-tab');
+                if (activeTab === 'manual') await loadManualHistory();
+                else await loadHistory();
+                updateSelectionUI();
+            } else {
+                const error = await response.json();
+                alert(`Error: ${error.detail || 'Failed to update status'}`);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Connection error while updating status.');
+        } finally {
+            setLoading(false, statusSelect);
+            statusSelect.value = '';
+        }
+    });
+
 
     // Auth Actions
     loginForm.addEventListener('submit', async (e) => {
@@ -547,12 +588,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 enrichBtn.classList.toggle('hidden', !allPending);
                 annotateBtn.classList.toggle('hidden', !allEnriched);
+                statusUpdateWrapper.classList.remove('hidden');
             } else {
                 enrichBtn.classList.add('hidden');
                 annotateBtn.classList.add('hidden');
+                statusUpdateWrapper.classList.remove('hidden');
             }
         } else {
             selectionBar.classList.add('hidden');
+            statusUpdateWrapper.classList.add('hidden');
         }
 
         document.querySelectorAll('.card, .mini-card').forEach(card => {
@@ -818,6 +862,12 @@ document.addEventListener('DOMContentLoaded', () => {
             aiDirector.textContent = data.director || 'N/A';
 
             // Emotion
+            // Description & Template Context
+            const aiDescText = document.getElementById('ai-description-text');
+            const aiTemplateCtx = document.getElementById('ai-template-context');
+            if (aiDescText) aiDescText.textContent = data.description_text || 'N/A';
+            if (aiTemplateCtx) aiTemplateCtx.textContent = data.template_description || 'N/A';
+
             aiEmotion.textContent = data.emotionLabel || 'N/A';
             aiEmotionDesc.textContent = data.emotionDescription || '';
             const related = data.relatedEmotions || [];
@@ -833,14 +883,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `).join('');
 
-            // Dialogs
-            const dialogs = data.dialogs || [];
-            aiDialogsList.innerHTML = dialogs.map(d => `
-                <div class="dialog-bubble">
-                    <div class="dialog-actor">${d.actor}</div>
-                    <div class="dialog-text">"${d.text}"</div>
-                </div>
-            `).join('');
+            // Dialogs (Deprecated, might be missing)
+            if (aiDialogsList) {
+                const dialogs = data.dialogs || [];
+                aiDialogsList.innerHTML = dialogs.map(d => `
+                    <div class="dialog-bubble">
+                        <div class="dialog-actor">${d.actor}</div>
+                        <div class="dialog-text">"${d.text}"</div>
+                    </div>
+                `).join('');
+            }
 
             // Grouped Tags
             const tags = data.tags || [];

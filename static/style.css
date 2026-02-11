@@ -798,6 +798,33 @@ button:active {
     color: var(--secondary);
 }
 
+.status-select-wrapper {
+    margin: 0 10px;
+}
+
+#status-select {
+    background: var(--glass);
+    border: 1px solid var(--secondary);
+    color: white;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+#status-select:hover {
+    background: var(--glass-border);
+    box-shadow: 0 0 10px rgba(0, 242, 234, 0.2);
+}
+
+#status-select option {
+    background: var(--bg);
+    color: white;
+}
+
 .selection-actions {
     display: flex;
     gap: 1rem;

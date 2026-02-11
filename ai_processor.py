@@ -6,7 +6,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+api_key = os.getenv("GEMINI_API_KEY")
+if api_key:
+    # Safely show a masked version of the key
+    print(f"DEBUG: Initializing Gemini with API Key: {api_key[:4]}...{api_key[-4:]}")
+else:
+    print("DEBUG: Initializing Gemini - NO API KEY FOUND in environment")
+
+genai.configure(api_key=api_key)
 
 model = genai.GenerativeModel('gemini-3-flash-preview')
 
@@ -28,10 +35,9 @@ Required Fields:
    - name: Actor name.
    - dob: Date of birth (YYYY-MM-DD) if known.
    - filmography: 3-4 other famous works.
-10. dialogs: A list of key dialogs from the scene. Each dialog object should have:
-    - text: The dialog text.
-    - actor: Who said it.
-11. tags: A list of 5-10 descriptive tags. Each tag object should have:
+10. description_text: A single string containing all key dialogs from the scene, separated by spaces.
+11. template_description: A brief string describing the context of the template/scene (e.g., "A tense face-off between a hero and a villain").
+12. tags: A list of 5-10 descriptive tags. Each tag object should have:
     - name: Tag name (e.g., Villian, Chaos, Interrogation).
     - category: One of [character, concept, situation, context].
 

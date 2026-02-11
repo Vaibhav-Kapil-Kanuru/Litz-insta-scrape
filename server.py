@@ -33,6 +33,10 @@ class ScrapeRequest(BaseModel):
 class BulkPostRequest(BaseModel):
     post_ids: List[str]
 
+class UpdateStatusRequest(BaseModel):
+    post_ids: List[str]
+    status: str
+
 class SigninRequest(BaseModel):
     emailOrUsername: str
     password: str
@@ -198,6 +202,17 @@ async def enrich_memes(req: BulkPostRequest):
                 if "error" in ai_data:
                     return {"post_id": post_id, "status": "error", "message": ai_data["error"]}
                     
+                # Normalize description_text strictly to "nan" if no dialogue
+                desc_text = ai_data.get("description_text", "").strip()
+                no_dialogue_variants = ["no dialogue", "no dialogs", "no dialogues", "nan", "n/a", "none"]
+                
+                is_empty = not desc_text or any(v in desc_text.lower() for v in no_dialogue_variants)
+                
+                if is_empty:
+                    ai_data["description_text"] = "nan"
+                else:
+                    ai_data["description_text"] = desc_text
+
                 post['ai_data'] = ai_data
                 post['status'] = 'enriched'
                 print(f"[{post_id}] Finished in {time.time() - start:.2f}s")
@@ -326,11 +341,28 @@ async def annotate_bulk(req: BulkPostRequest, request: Request):
             form_data[f"items[{i}]releaseYear"] = str(data.get("releaseYear", ""))
             form_data[f"items[{i}]genre"] = data.get("genre", "")
             form_data[f"items[{i}]director"] = data.get("director", "")
+            
+            # Emotion & Release Fields
             form_data[f"items[{i}]emotionLabel"] = data.get("emotionLabel", "")
             form_data[f"items[{i}]emotionDescription"] = data.get("emotionDescription", "")
+            rel_emotions = data.get("relatedEmotions", [])
+            form_data[f"items[{i}]relatedEmotions"] = " • ".join(rel_emotions) if isinstance(rel_emotions, list) else str(rel_emotions)
             form_data[f"items[{i}]memeReleaseYear"] = str(data.get("memeReleaseYear", ""))
-            form_data[f"items[{i}]imageSize"] = "1024,1024"
+
+            # Dialogue mapping logic - strictly "nan" if no dialogue
+            desc_text = data.get("description_text", "").strip()
+            no_dialogue_variants = ["no dialogue", "no dialogs", "no dialogues", "nan", "n/a", "none"]
+            
+            is_empty = not desc_text or any(v in desc_text.lower() for v in no_dialogue_variants)
+            
+            dialog_val = "nan" if is_empty else desc_text
+
+            form_data[f"items[{i}]dialogs[0]text"] = dialog_val
+            form_data[f"items[{i}]dialogs[0]text[0]"] = "nan"
+            form_data[f"items[{i}]templateDescription"] = data.get("template_description", "")
             form_data[f"items[{i}]status"] = "approved"
+            
+            print(f"DEBUG: Prepared item {i} fields: {[k for k in form_data.keys() if k.startswith(f'items[{i}]')]}")
             
             # File Upload with Format Compatibility Fix
             img_path = post['image_path']
@@ -379,11 +411,8 @@ async def annotate_bulk(req: BulkPostRequest, request: Request):
                 form_data[f"items[{i}]actors[{j}]dob"] = actor.get("dob", "")
                 form_data[f"items[{i}]actors[{j}]filmography"] = " • ".join(actor.get("filmography", [])) if isinstance(actor.get("filmography"), list) else actor.get("filmography", "")
                 
-            # Dialogs (filter unknown actors)
-            valid_dialogs = [d for d in data.get("dialogs", []) if not is_unknown(d.get("actor"))]
-            for j, dialog in enumerate(valid_dialogs):
-                form_data[f"items[{i}]dialogs[{j}]text"] = dialog.get("text", "")
-                form_data[f"items[{i}]dialogs[{j}]actor"] = dialog.get("actor", "")
+            # Dialogs (Deprecated in favor of description_text, but we send as 'nan' above)
+            # No longer iterating through dialogs list
                 
             # Tags
             for j, tag in enumerate(data.get("tags", [])):
@@ -537,6 +566,46 @@ async def enrich_uploads(req: BulkPostRequest):
             json.dump(uploads, f, indent=2)
             
     return results
+
+@app.post("/api/memes/update-status")
+async def update_memes_status(req: UpdateStatusRequest):
+    updated_scraped = False
+    updated_manual = False
+    
+    # 1. Update scraped history
+    scraped_history = []
+    if os.path.exists("storage/metadata.json"):
+        with open("storage/metadata.json", "r") as f:
+            scraped_history = json.load(f)
+            
+        for post in scraped_history:
+            if post['post_id'] in req.post_ids:
+                post['status'] = req.status
+                updated_scraped = True
+                
+        if updated_scraped:
+            with open("storage/metadata.json", "w") as f:
+                json.dump(scraped_history, f, indent=2)
+                
+    # 2. Update manual history
+    manual_history = []
+    if os.path.exists("storage/uploads_metadata.json"):
+        with open("storage/uploads_metadata.json", "r") as f:
+            manual_history = json.load(f)
+            
+        for post in manual_history:
+            if post['post_id'] in req.post_ids:
+                post['status'] = req.status
+                updated_manual = True
+                
+        if updated_manual:
+            with open("storage/uploads_metadata.json", "w") as f:
+                json.dump(manual_history, f, indent=2)
+                
+    if not updated_scraped and not updated_manual:
+        raise HTTPException(status_code=404, detail="No matching memes found to update status")
+        
+    return {"message": f"Successfully updated status to '{req.status}' for {len(req.post_ids)} memes"}
 
 # Serve uploaded images
 app.mount("/upload-images", StaticFiles(directory="storage/uploads"), name="upload_images")

@@ -205,6 +205,14 @@
                 <button id="annotate-btn" class="btn-small btn-primary hidden">
                     <i class="fas fa-cloud-upload-alt"></i> Bulk Annotate
                 </button>
+                <div class="status-select-wrapper hidden" id="status-update-wrapper">
+                    <select id="status-select" class="btn-small btn-secondary">
+                        <option value="" disabled selected>Set Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="enriched">Enriched</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
                 <button id="clear-selection" class="btn-small btn-secondary">
                     <i class="fas fa-times"></i> Clear
                 </button>
@@ -238,6 +246,15 @@
                             <div class="ai-item"><strong>Director:</strong> <span id="ai-director"></span></div>
                         </div>
 
+                        <!-- Description & Context -->
+                        <div class="ai-section">
+                            <h4><i class="fas fa-align-left"></i> Description & Context</h4>
+                            <div class="description-detail">
+                                <p><strong>Dialogs:</strong> <span id="ai-description-text">N/A</span></p>
+                                <p><strong>Template Context:</strong> <span id="ai-template-context">N/A</span></p>
+                            </div>
+                        </div>
+
                         <!-- Emotion Analysis -->
                         <div class="ai-section">
                             <h4><i class="fas fa-heart"></i> Emotion Analysis</h4>
@@ -254,11 +271,7 @@
                             <div id="ai-actors-list" class="actors-scroll-grid"></div>
                         </div>
 
-                        <!-- Memorable Dialogs -->
-                        <div class="ai-section">
-                            <h4><i class="fas fa-comment-alt"></i> Dialogs</h4>
-                            <div id="ai-dialogs-list" class="dialogs-container"></div>
-                        </div>
+                        <!-- Removed Dialogs section as it is merged into Description -->
 
                         <div class="ai-tags">
                             <strong>Tags:</strong>
